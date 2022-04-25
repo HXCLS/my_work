@@ -2,7 +2,8 @@
 #include "TcpClient.h"
 
 int TcpClient::_recvCount = 0;
-
+int TcpClient::_loginfalse = 0;
+int TcpClient::_loginok = 0;
 TcpClient::TcpClient()
 {
 	_sock = INVALID_SOCKET;
@@ -14,14 +15,20 @@ bool TcpClient::Connect(const char* ip, int port)
 {
 	_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (_sock == INVALID_SOCKET)
+	{
+		std::cout << "socket false" << std::endl;
 		goto end;
+	}
 	SOCKADDR_IN addr;
 	addr.sin_addr.S_un.S_addr = inet_addr(ip);
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 
 	if (SOCKET_ERROR == connect(_sock, (SOCKADDR*)&addr, sizeof(addr)))
+	{
+		std::cout << "connect false" << WSAGetLastError() << std::endl;
 		goto end;
+	}
 
 	return true;
 end:
@@ -115,27 +122,38 @@ int TcpClient::OnNetMsg(const char* msg, int len)
 	NetEnum type = (NetEnum)header->type;
 	switch (type)
 	{
-	case NetEnum::E_PING:
-		break;
 	case NetEnum::E_LOGINCTOS:
 		break;
 	case NetEnum::E_LOGINSTOC:
 	{
+		_recvCount++;
 		tagNetLoginSToC* login = (tagNetLoginSToC*)msg;
-
-		/*std::cout << "登录返回" << login->_ << std::endl;*/
+		std::string loginback = login->m;
+		if (loginback == "login ok")
+		{
+			_loginok++;
+		}
+		else
+		{
+			_loginfalse++;
+		}
+		/*std::cout << "登录返回" << login->m << std::endl;*/
 	}
 	break;
 	default:
 		break;
 	}
-
-	_recvCount++;
 	return header->len;
 }
 
 void TcpClient::SendLogin()
 {
 	tagNetLoginCToS login("123", "123");
+	Send((char*)&login, sizeof(tagNetLoginCToS));
+}
+
+void TcpClient::SendLogin2()
+{
+	tagNetLoginCToS login("12", "13");
 	Send((char*)&login, sizeof(tagNetLoginCToS));
 }

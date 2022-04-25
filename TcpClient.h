@@ -6,7 +6,7 @@
 #pragma comment(lib,"ws2_32.lib")
 #include<iostream>
 #include<vector>
-#include"NetHeader.h"
+#include"NetType.h"
 #define NET_BUFF_LEN (4096)
 #include "../HighServer/Timestamp.hpp"
 
@@ -21,7 +21,10 @@ private:
 	char _sendBuff[NET_BUFF_LEN];
 	int _sendLen;
 public:
+	static int _loginok;
+	static int _loginfalse;
 	static int _recvCount;
+
 	TcpClient();
 	bool Connect(const char* ip, int port);
 	bool Update(int t);
@@ -33,6 +36,7 @@ public:
 public:
 	int OnNetMsg(const char* msg, int len);
 	void SendLogin();
+	void SendLogin2();
 };
 
 

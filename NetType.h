@@ -1,10 +1,9 @@
-#ifndef _NETHEADER_H_
-#define _NETHEADER_H_
+#ifndef _NETTYPE_H_
+#define _NETTYPE_H_
 #include<string.h>
 
 enum class NetEnum
 {
-	E_PING,
 	E_LOGINCTOS,
 	E_LOGINSTOC
 };
@@ -19,15 +18,12 @@ struct tagNetHeader
 		this->len = len;
 	}
 };
-struct tagNetPing :tagNetHeader
-{
-	tagNetPing() :tagNetHeader(sizeof(tagNetPing), NetEnum::E_PING) {}
-};
+
 
 struct tagNetLoginCToS :tagNetHeader
 {
-	char username[20];
-	char password[20];
+	char username[6];
+	char password[6];
 	tagNetLoginCToS(const char* un, const char* pwd)
 		:tagNetHeader(sizeof(tagNetLoginCToS), NetEnum::E_LOGINCTOS)
 	{
@@ -41,12 +37,12 @@ struct tagNetLoginCToS :tagNetHeader
 
 struct tagNetLoginSToC :tagNetHeader
 {
-	char _[20];
+	char m[10];
 	tagNetLoginSToC(const char* msg) :tagNetHeader(sizeof(tagNetLoginSToC), NetEnum::E_LOGINSTOC)
 	{
-		strcpy(_, msg);
+		strcpy(m, msg);
 	}
 };
 
 
-#endif//_NETHEADER_H
+#endif//_MESSAGETYPE_H_
